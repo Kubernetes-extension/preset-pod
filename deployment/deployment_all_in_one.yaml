@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: preset-pod
+  namespace: preset
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: preset-pod-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: preset-pod
+  namespace: preset
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: preset-pod
+  namespace: preset
+  labels:
+    app: preset-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: preset-pod
+  template:
+    metadata:
+      labels:
+        app: preset-pod
+    spec:
+      containers:
+        - name: preset-pod
+          image: xx.xx.xx.x/xxx/preset-pod:v1.1
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: preset
+              mountPath: /etc/webhook/certs
+              readOnly: true
+      volumes:
+        - name: preset
+          secret:
+            secretName: preset-pod
+      serviceAccountName: preset-pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: preset-pod
+  namespace: preset
+spec:
+  ports:
+    - port: 443
+      targetPort: 443
+  selector:
+    app: preset-pod
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: preset-pod
+webhooks:
+  - name: fix.pod.ip
+    clientConfig:
+      service:
+        name: preset-pod
+        namespace: preset
+        path: "/preset/api/v1.10/validate/fixpodip"
+      caBundle: ${CA_PEM_B64}
+    failurePolicy: Fail
+    rules:
+      - operations: ["CREATE","UPDATE"]
+        apiGroups: ["apps",""]
+        apiVersions: ["v1","v1beta1"]
+        resources: ["statefulsets"]
+    objectSelector:
+      matchLabels:
+        fix-pod-ip: enabled
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: preset-pod
+webhooks:
+  - name: fix.pod.ip
+    clientConfig:
+      service:
+        name: preset-pod
+        namespace: preset
+        path: "/preset/api/v1.10/mutate/fixpodip"
+      caBundle: ${CA_PEM_B64}
+    failurePolicy: Fail
+    rules:
+      - operations: ["CREATE","UPDATE"]
+        apiGroups: ["apps", ""]
+        apiVersions: ["v1","v1beta1"]
+        resources: ["pods"]
+    objectSelector:
+      matchLabels:
+        fix-pod-ip: enabled
