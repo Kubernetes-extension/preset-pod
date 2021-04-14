@@ -31,9 +31,9 @@
     * 项目中deployment/statefulset.yaml为示例部署SatefulSet的YAML文件，需要注意以下几点
         * `只能使用SatefulSet才可以`，不能使用Deployment或者DaemonSet等其他部署方式
         * metadata.labels 和 spec.template.metadata.labels 必须添加 `fix-pod-ip: enabled` 此标签
-        * spec.template.metadata.annotations 必须添加如下类型的注解，其中一个Pod将在node01.example.kingfisher.com节点上面并绑定10.10.10.101这个IP，其他Pod以此类推
+        * spec.template.metadata.annotations 必须添加如下类型的注解，其中一个Pod将在node01.example.node.com节点上面并绑定10.10.10.101这个IP，其他Pod以此类推
       >```yaml
-        >fix.pod.ip: "[{\"node01.example.kingfisher.com\":[\"10.10.10.101\"]},{\"node002.example.kingfisher.com\":[\"10.10.10.102\"]},{\"node003.example.kingfisher.com\":[\"10.10.10.103\"]}]"
+        >fix.pod.ip: "[{\"node01.example.node.com\":[\"10.10.10.101\"]},{\"node002.example.node.com\":[\"10.10.10.102\"]},{\"node003.example.node.com\":[\"10.10.10.103\"]}]"
         >```
         * spec.replicas 副本数量必须`小于等于` spec.template.metadata.annotations 这个注释转换成列表后的长度
     
