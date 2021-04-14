@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/Kubernetes-extension/preset-pod/imple"
+	"github.com/Kubernetes-extension/preset-pod/impl"
 	"github.com/Kubernetes-extension/utils/common"
 	"github.com/gin-gonic/gin"
 	"net/http"

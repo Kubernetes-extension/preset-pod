@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/Kubernetes-extension/preset-pod/router"
-	"github.com/Kubernetes-extension/utils/log"
 	"github.com/Kubernetes-extension/utils/kit"
+	"github.com/Kubernetes-extension/utils/log"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
