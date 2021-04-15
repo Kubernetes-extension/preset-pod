@@ -6,7 +6,8 @@ import (
 )
 
 func K8SClient() (*kubernetes.Clientset, error) {
-	cfg, err := clientcmd.BuildConfigFromFlags("", "") //使用InClusterConfig
+	// 使用InClusterConfig
+	cfg, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
 		return nil, err
 	}
